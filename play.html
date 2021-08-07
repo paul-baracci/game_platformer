@@ -1,0 +1,130 @@
+<canvas id="gc" width="1280" height="500"></canvas>
+<script>
+playerx=playery=200;
+xvelocity=yvelocity=0;
+gravity=0.5;
+onGround=false;
+holdLeft=holdRight=false;
+platforms=[];
+
+playerImage = new Image();
+playerImage.src = "player.png"
+spriteWidth = 70;
+spriteHeight = 70;
+framex = 0;
+framey = 0;
+spriteframe = 0
+
+window.onload=function() {
+  canvas=document.getElementById("gc");
+  context=canvas.getContext("2d");
+  setInterval(update,1000/30);
+  document.addEventListener("keyup", keyUp);
+  document.addEventListener("keydown", keyDown);
+  for(i=0;i<50;i++) {
+    platforms.push(
+      {
+      x:Math.random() * canvas.width,
+      y:Math.random() * canvas.height,
+      w:Math.random() * 100+30,
+      h:Math.random() * 30+20
+      }
+    );
+  }
+}
+
+function update() {
+  if (holdLeft) {
+	 xvelocity -= 0.5;
+  }
+  if (holdRight) {
+	 xvelocity += 0.5; 
+  }
+  playerx+=xvelocity;
+  playery+=yvelocity;
+  if (onGround) {
+	  xvelocity *= 0.8; 
+	  framey = 0;
+	} else {
+    yvelocity += 0.8;
+    framex = 0;
+    framey = 2;
+
+  
+  }
+  if(playery > 800) {
+		alert('Game Over. Restart?');
+		playerx=playery=200;
+		xvelocity=yvelocity=0;
+		}
+  
+  onGround=false;
+  for(i=0;i<50;i++) {
+    if(playerx>platforms[i].x && playerx<platforms[i].x + platforms[i].w &&
+      playery>platforms[i].y && playery<platforms[i].y + platforms[i].h) {
+      playery=platforms[i].y;
+      onGround = true;
+      if (holdRight) {
+		  framey=0;
+		  if (framex < 3) {
+		  framex++;
+		  }
+		else framex = 1;
+	  }
+	  if (holdLeft) {
+		  framey=1;
+		  if (framex < 3) {
+		  framex++;
+		  }
+		  else framex = 1
+	  }
+    }
+  }
+  context.fillStyle="white";
+  context.fillRect(0,0,canvas.width,canvas.height);
+  context.fillStyle="cadetblue";
+  context.drawImage(playerImage, framex * spriteWidth, framey * spriteHeight, spriteWidth, spriteHeight, playerx+35, playery, -70, -70)
+  context.fillStyle="blue";
+  context.fillRect
+  for(i=0;i<50;i++) {
+	context.lineWidth = 1;
+	context.strokeStyle="green";
+    context.strokeRect(platforms[i].x,platforms[i].y,platforms[i].w,platforms[i].h);
+  }
+}
+  
+function keyDown(evt) {
+  switch(evt.keyCode) {
+    case 37: //left arrow key
+      holdLeft=true;
+        break;
+    case 32: // space bar
+        if(onGround) {
+          yvelocity = -10;
+          framex = 0;
+          framey = 2;
+        }
+        break;   
+    case 39: //right arrow key
+      holdRight=true;
+        break;
+  }
+}
+function keyUp(evt) {
+  switch(evt.keyCode) {
+    case 37:
+      holdLeft=false;
+      framex = 0;
+        break;
+    case 32:
+        if(yvelocity<-3) {
+          yvelocity = -3;
+        }
+        break;   
+    case 39:
+      holdRight=false;
+      framex = 0;
+        break;
+    }
+}
+</script>
